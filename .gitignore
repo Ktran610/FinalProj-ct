@@ -1,0 +1,6 @@
+*/__init__.py
+*/.pyc
+*/programs/*
+*.zip
+*.md
+**/__pycache__/
