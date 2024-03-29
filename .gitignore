@@ -1,0 +1,8 @@
+*/.pyc
+*/programs/*
+*.zip
+*.md
+**/__pycache__/
+**/data/
+**/pythonProject/
+**/.idea/
