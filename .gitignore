@@ -1,8 +1,27 @@
-*/.pyc
-*/programs/*
+# Ignore compiled Python files
+*.pyc
+
+# Ignore all files under programs directory
+programs/*
+
+# Ignore zip files
 *.zip
+
+# Ignore markdown files
 *.md
+
+# Ignore Python cache directories
 **/__pycache__/
-**/data/
+
+# Ignore all files under data directory except vectorestore
+/data/*
+!/data/vectorstore/
+
+# Ignore pythonProject directory
 **/pythonProject/
+
+# Ignore IDE specific files (e.g., for PyCharm)
 **/.idea/
+
+# Ignore key.txt file
+**/key.txt

@@ -38,7 +38,7 @@ def set_custom_prompt():
 #PROMPT = PromptTemplate(template=template, input_variables=["context"])
 chain_type_kwargs = {"prompt": set_custom_prompt()}
 llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
-vectorstore = FAISS.load_local('../data/vectorstore', embeddings, allow_dangerous_deserialization=True)
+vectorstore = FAISS.load_local('data/vectorstore', embeddings, allow_dangerous_deserialization=True)
 retriever = vectorstore.as_retriever(search_kwargs={'k': 1})
 
 qa = RetrievalQA.from_chain_type(
