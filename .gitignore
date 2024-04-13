@@ -7,8 +7,6 @@ programs/*
 # Ignore zip files
 *.zip
 
-# Ignore markdown files
-*.md
 
 # Ignore Python cache directories
 **/__pycache__/
