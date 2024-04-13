@@ -30,6 +30,6 @@ if __name__ == "__main__":
         ("###", "Header 3"),
     ]
 
-    processor = MarkdownLoader('../../data/combine_data/')
+    processor = MarkdownLoader('data/test_one_file/')
     md_header_splits = processor.split_markdown()
     print(md_header_splits)
