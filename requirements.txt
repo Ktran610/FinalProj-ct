@@ -3,3 +3,4 @@ faiss-cpu
 langchain-community
 tqdm
 chardet
+langchain_openai
