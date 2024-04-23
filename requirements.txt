@@ -4,3 +4,5 @@ langchain-community
 tqdm
 chardet
 langchain_openai
+fastapi
+uvicorn
