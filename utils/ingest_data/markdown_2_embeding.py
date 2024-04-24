@@ -10,10 +10,12 @@ headers = [
     ("###", "Header 3"),
 ]
 
-processor = MarkdownLoader('data/test_one_file/')
+processor = MarkdownLoader('../../data/demo_data/')
 md_header_splits = processor.split_markdown()
 
 embeddings = OpenAIEmbeddings()
 db = FAISS.from_documents(md_header_splits, embeddings)
 
-db.save_local("data/vectorstore")
+db.save_local("../../data/vectorstore")
+
+print(f"Processed {len(md_header_splits)} documents.")

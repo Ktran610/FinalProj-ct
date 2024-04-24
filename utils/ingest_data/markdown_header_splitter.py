@@ -2,6 +2,7 @@
 
 from langchain_community.document_loaders import DirectoryLoader, TextLoader
 from langchain_text_splitters import MarkdownHeaderTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 class MarkdownLoader:
     def __init__(self, path):
@@ -22,6 +23,23 @@ class MarkdownLoader:
         markdown_splitter = MarkdownHeaderTextSplitter(
             headers_to_split_on = self.headers_to_split_on, strip_headers=False
         )
+
+        md_header_splits= markdown_splitter.split_text(self.docs)
+
+        chunk_size = 1000
+        chunk_overlap = 30
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=chunk_size, chunk_overlap=chunk_overlap
+        )
+
+        # Split
+        splits = text_splitter.split_documents(md_header_splits)
+
+        return splits
+    def split_markdown_2(self):
+        markdown_splitter = MarkdownHeaderTextSplitter(
+            headers_to_split_on = self.headers_to_split_on, strip_headers=False
+        )
         return markdown_splitter.split_text(self.docs)
 
 if __name__ == "__main__":
@@ -31,7 +49,7 @@ if __name__ == "__main__":
         ("###", "Header 3"),
     ]
 
-    processor = MarkdownLoader('data/test_one_file/')
+    processor = MarkdownLoader('../../data/demo_data/')
     md_header_splits = processor.split_markdown()
-    print(md_header_splits[0])
-    #print(md_header_splits[-2])
+    print(len(md_header_splits))
+    print(md_header_splits[-4])

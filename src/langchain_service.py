@@ -16,7 +16,7 @@ class QueryRunner:
         self.embeddings = OpenAIEmbeddings()
         self.vectorstore = FAISS.load_local(configs.vector_store_path, self.embeddings, allow_dangerous_deserialization=True)
         self.retriever = self.vectorstore.as_retriever(search_kwargs={'k': configs.retrieval_k})
-        self.llm = ChatOpenAI(model=configs.model_name, temperature=configs.temperature)
+        self.llm = ChatOpenAI(model=configs.name_model_gpt, temperature=configs.temperature)
         self.prompt_template = self.set_custom_prompt()
 
         self.qa = RetrievalQA.from_chain_type(
@@ -24,7 +24,6 @@ class QueryRunner:
             chain_type="stuff",
             retriever=self.retriever,
             chain_type_kwargs={"prompt": self.prompt_template},
-            callbacks=None,
             verbose=True,
             return_source_documents=True,
         )
@@ -32,13 +31,14 @@ class QueryRunner:
         self.chain_conversation = self.create_chain()
 
     def run_query(self, query):
+        print("query", query)
         result_query = self.qa({"query": query})
         print(result_query)
         return result_query['result']
 
     def set_custom_prompt(self):
         template = """Use the following information to answer the user's question.
-        If you do not know the answer, just say that you do not know; do not make up an answer.
+        You are a bot serving the Duy Tan University community by providing information and answering questions in full detail.
         All your answers must be in Vietnamese.
         Context: {context}
         Question: {question}
@@ -49,7 +49,7 @@ class QueryRunner:
     def create_chain(self):
 
         prompt = ChatPromptTemplate.from_messages([
-            ("system", "Answer the user's questions based on the context: {context}"),
+            ("system", "Answer the user's questions in full detail about Duy Tan University based on the context: {context}"),
             MessagesPlaceholder(variable_name="chat_history"),
             ("user", "{input}")
         ])
@@ -81,6 +81,7 @@ class QueryRunner:
             "chat_history": chat_history,
             "input": question,
         })
+        print(response)
         return response['answer']
 
 
