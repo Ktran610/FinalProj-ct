@@ -15,7 +15,8 @@ class MarkdownLoader:
         text_loader_kwargs = {'autodetect_encoding': True}
         self.loader = DirectoryLoader(self.path, glob="**/*.md", loader_cls=TextLoader,
                                       show_progress=True, loader_kwargs=text_loader_kwargs)
-        self.docs = self.loader.load()[0].page_content
+        pages = self.loader.load()
+        self.docs = ' '.join(page.page_content for page in pages)
 
     def split_markdown(self):
         markdown_splitter = MarkdownHeaderTextSplitter(
@@ -32,4 +33,5 @@ if __name__ == "__main__":
 
     processor = MarkdownLoader('data/test_one_file/')
     md_header_splits = processor.split_markdown()
-    print(md_header_splits)
+    print(md_header_splits[0])
+    #print(md_header_splits[-2])
