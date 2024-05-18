@@ -9,8 +9,11 @@ from langchain.chains.history_aware_retriever import create_history_aware_retrie
 from langchain.chains import create_retrieval_chain
 from langchain.vectorstores.faiss import FAISS
 from config import configs
+import cohere
 
-
+import os
+os.environ['OPENAI_API_KEY'] = configs.openai_api_key
+os.environ['COHERE_API_KEY'] = configs.cohere_api_key
 class QueryRunner:
     def __init__(self):
         self.embeddings = OpenAIEmbeddings()
@@ -18,6 +21,7 @@ class QueryRunner:
         self.retriever = self.vectorstore.as_retriever(search_kwargs={'k': configs.retrieval_k})
         self.llm = ChatOpenAI(model=configs.name_model_gpt, temperature=configs.temperature)
         self.prompt_template = self.set_custom_prompt()
+        self.cohere_client = cohere.Client(os.getenv('COHERE_API_KEY'))
 
         self.qa = RetrievalQA.from_chain_type(
             llm=self.llm,
@@ -32,9 +36,37 @@ class QueryRunner:
 
     def run_query(self, query):
         print("query", query)
-        result_query = self.qa({"query": query})
+
+        # Retrieve documents
+        retrieved_documents = self.retriever.get_relevant_documents(query)
+
+        # Rerank documents using Cohere Reranker
+        reranked_documents = self.rerank_documents(query, retrieved_documents)
+
+        # Set context from reranked documents
+        context = "\n".join([doc.page_content for doc in reranked_documents])
+
+        # Run the QA chain
+        result_query = self.qa({"query": query, "context": context})
         print(result_query)
         return result_query['result']
+
+    def rerank_documents(self, query, documents):
+        texts = [doc.page_content for doc in documents]
+        rerank_response = self.cohere_client.rerank(
+            model="rerank-multilingual-v3.0",
+            query=query,
+            documents=texts,
+            top_n=len(texts),
+            return_documents=True
+        )
+        reranked_docs = sorted(
+            zip(documents, rerank_response.results),
+            key=lambda x: x[1].relevance_score,
+            reverse=True
+        )
+
+        return [doc for doc, result in reranked_docs]
 
     def set_custom_prompt(self):
         template = """Use the following information to answer the user's question.

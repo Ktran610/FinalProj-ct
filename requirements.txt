@@ -6,3 +6,4 @@ chardet
 langchain_openai
 fastapi
 uvicorn
+cohere
